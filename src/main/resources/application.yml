@@ -1,0 +1,295 @@
+spring:
+    application:
+        name: order
+    datasource:
+        driverClassName: com.mysql.jdbc.Driver
+        url: jdbc:mysql://localhost:3309/dev_lifcare_order?autoReconnect=true&zeroDateTimeBehavior=convertToNull
+        username: dev_readonly
+        password: Lif#Care123
+
+    
+    #data: 
+    #    mongodb:
+    #        uri: mongodb://35.200.203.160:27017/catalog
+    #        repositories:
+    #            enabled: true   
+        #initialize: false  
+
+    redis:
+        host: 127.0.0.1 
+        port: 6379
+        database: 3
+        password: 
+    jpa:
+      properties:
+        hibernate:
+          temp:
+            use_jdbc_metadata_defaults: false
+
+endpoint:
+  lifcare:
+    account:
+      service: http://sandbox2.lifcare.in/v5/account
+    shipping:
+      service: http://sandbox2.lifcare.in/v1/shipping
+    inventory:
+      service: http://sandbox2.lifcare.in/v1/inventory
+    auth:
+      service: http://sandbox2.lifcare.in/v1
+    fareye:
+      service: https://staging.fareye.co/api/v1
+    wallet:
+      service: http://sandbox2.lifcare.in/v1/wallet  
+    coupon:
+      service: http://sandbox2.lifcare.in/v1/coupon
+    catalog:
+      service: http://sandbox2.lifcare.in/v7/catalog
+    payment:
+      service: http://sandbox2.lifcare.in/v1/payment
+    salus:
+      service: http://sandbox2.lifcare.in/v6/order
+    user:
+      service: http://sandbox2.lifcare.in/v1/user
+
+security:
+  oauth2:
+    client:
+      client-id: order-service
+      client-secret: secret 
+      access-token-uri:  ${endpoint.lifcare.auth.service}/oauth/token
+      token-name: oauth_token
+      grant-type: client_credentials
+    resource:
+      user-info-uri: ${endpoint.lifcare.auth.service}/auth/user
+  basic: 
+    enabled: false
+
+
+server:
+  contextPath : /v6
+  port: 9001
+
+multipart:
+  enabled: true
+  file-size-threshold: 0 # Threshold after which files will be written to disk.
+  location : /tmp
+  max-file-size : 50Mb # Max file size.
+  max-request-size : 50Mb # Max request size.
+
+
+prescription:
+  s3:
+    bucket: prescription.lifcare.in
+    access:
+      key: AKIAIVSMRT66ULAAZORQ
+    secret:
+      key: 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
+  temp:
+    storage: /tmp
+   
+ 
+redis:
+  host:
+    name: 127.0.0.1
+    port: 6379
+    password: root
+  default.expiry-time: 3000
+
+hystrix:
+  connection-timeout: 1000
+  enabled: true
+   
+expressDelivery:
+   startTime: '18:30:00'
+   endTime: '10:30:00'
+   maxCashback: 200
+   expressDeliveryCashbackPercentage: 0.1
+   expressOrderCount: 50
+
+lfAssured:
+    maxCashback: 200
+    lfAssuredCashbackPercentage: 0.1
+    
+is-mask-apply: yes
+
+bulk-ordered:
+  days: 10
+  orders: 4
+  
+default-consumption: 10
+
+default-max-order-qty: 10
+
+default-bulk-max-order-qty: 300
+bulk-medicine-upload-sku-limit: 150
+
+payment-confirmation-time: 30 
+payment-cancellation-time: 180
+
+customer-care-number:
+  facility-100: '14139443944'
+  facility-101: '01139443944'
+---
+spring:
+    profiles: container
+    application:
+        name: order
+    datasource:
+        #url: jdbc:mysql://localhost:3307/lifcare_order?autoReconnect=true&zeroDateTimeBehavior=convertToNull
+        url: jdbc:mysql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}?autoReconnect=true&zeroDateTimeBehavior=convertToNull
+        username: ${DATABASE_USER}
+        password: ${DATABASE_PASSWORD}
+        driver-class-name: com.mysql.jdbc.Driver
+    #data: 
+    #    mongodb:
+    #        host: ${MONGO_HOST}
+    #        port: 27017
+    #        database: ${MONGO_DB}     
+
+    redis:
+        host: ${REDIS_HOST} 
+        port: ${REDIS_PORT}
+        database: 3
+        password: 
+    jpa:
+      properties:
+        hibernate:
+          temp:
+            use_jdbc_metadata_defaults: false
+
+    http:
+        multipart:
+            enabled: true
+            file-size-threshold: 0 # Threshold after which files will be written to disk.
+            location : /tmp
+            max-file-size : 20Mb # Max file size.
+            max-request-size : 20Mb # Max request size.
+
+endpoint:
+  lifcare:
+    account:
+      service: http://${ACCOUNT_SERVICE_URL}/v5/account
+    shipping:
+      service: http://${SHIPPING_SERVICE_URL}/v1/shipping
+    inventory:
+      service: http://${INVENTORY_SERVICE_URL}/v1/inventory
+    auth:
+      service: http://${AUTH_SERVICE_URL}/v1
+    wallet:
+      service: http://${WALLET_SERVICE_URL}/v1/wallet
+    orderProcessing:
+      service: http://${ORDER_PROCESSING_SERVICE_URL}/v1/facility
+    salus:
+      service: http://${SALUS_SERVICE_URL}/v6/order
+    doctor-lead:
+      service: http://${DOCTOR_LEAD_SERVICE_URL}/v1/crm/doctor
+    coupon:
+      service: http://${COUPON_SERVICE_URL}/v5/coupon
+    catalog:
+      service: http://${CATALOG_V7_SERVICE_URL}/v7/catalog
+    payment:
+      service: http://${PAYMENT_SERVICE_URL}/v1/payment
+    user:
+      service: http://${MAIN_URL}/v1/user
+      
+
+security:
+  oauth2:
+    client:
+      client-id: order-service
+      client-secret: secret 
+      access-token-uri:  ${endpoint.lifcare.auth.service}/oauth/token
+      token-name: oauth_token
+      grant-type: client_credentials
+    resource:
+      user-info-uri: ${endpoint.lifcare.auth.service}/auth/user
+  basic: 
+    enabled: false
+
+
+server:
+  contextPath : /v6
+  port: ${APPLICATION_PORT}
+
+multipart:
+  enabled: true
+  file-size-threshold: 0 # Threshold after which files will be written to disk.
+  location : /tmp
+  max-file-size : 50Mb # Max file size.
+  max-request-size : 50Mb # Max request size.
+
+   
+prescription:
+  s3:
+   # bucket: prescription.lifcare.in
+    bucket: ${S3_PRESCRIPTION_IMAGE_BUCKET}
+    access:
+      #key: AKIAIVSMRT66ULAAZORQ
+      key: ${S3_ACCESS_KEY}
+    secret:
+      key: ${S3_SECRET_KEY}
+      #key: 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
+  temp:
+    storage: /tmp
+ 
+redis:
+  host:
+    name: ${REDIS_HOST}
+    port: ${REDIS_PORT}
+    password: root
+  default.expiry-time: 3000
+
+#hystrix:
+#  connection-timeout: 1000
+#  enabled: true
+   
+expressDelivery:
+   startTime: '18:30:00'
+   endTime: '10:30:00'
+   maxCashback: 200
+   expressDeliveryCashbackPercentage: 0.1
+   expressOrderCount: 50
+
+lfAssured:
+    maxCashback: 200
+    lfAssuredCashbackPercentage: 0.1
+   
+    
+is-mask-apply: yes
+   
+bulk-ordered:
+  orders: 4
+  days: 30
+
+default-consumption: 10
+
+default-max-order-qty: 100
+default-bulk-max-order-qty: 300
+bulk-medicine-upload-sku-limit: 150
+
+kafka.properties.brokers: ${KAFKA_HOST}:${KAFKA_PORT}
+  
+payment-confirmation-time: 30 
+payment-cancellation-time: 2880
+
+customer-care-number:
+  facility-100: '14139443944'
+  facility-101: '01139443944'
+  
+feign:
+  client:
+    config:
+      feignName:
+        connectTimeout: 8000
+        readTimeout: 8000
+        loggerLevel: basic
+  hystrix:
+    enabled: true
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          strategy: SEMAPHORE
+  connection-timeout: 2000
+  enabled: true

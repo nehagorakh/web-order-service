@@ -1,0 +1,6 @@
+/target/
+.settings/
+logs/
+*.iml
+producer.log*
+*.DS_Store

@@ -1,0 +1,4 @@
+code-analysis-job:
+  tags: 
+    - sonarqube
+  script: mvn clean 
